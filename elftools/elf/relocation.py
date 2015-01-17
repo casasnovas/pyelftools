@@ -46,8 +46,8 @@ class Relocation(object):
 class RelocationSection(Section):
     """ ELF relocation section. Serves as a collection of Relocation entries.
     """
-    def __init__(self, header, name, stream, elffile):
-        super(RelocationSection, self).__init__(header, name, stream)
+    def __init__(self, header, name, stream, elffile, idx):
+        super(RelocationSection, self).__init__(header, name, stream, idx)
         self.elffile = elffile
         self.elfstructs = self.elffile.structs
         if self.header['sh_type'] == 'SHT_REL':

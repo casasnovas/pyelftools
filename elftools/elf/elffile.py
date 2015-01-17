@@ -69,7 +69,7 @@ class ELFFile(object):
             subclass)
         """
         section_header = self._get_section_header(n)
-        return self._make_section(section_header)
+        return self._make_section(section_header, n)
 
     def get_section_by_name(self, name):
         """ Get a section from the file, by name. Return None if no such
@@ -254,16 +254,16 @@ class ELFFile(object):
         name_offset = section_header['sh_name']
         return self._file_stringtable_section.get_string(name_offset)
 
-    def _make_section(self, section_header):
+    def _make_section(self, section_header, idx):
         """ Create a section object of the appropriate type
         """
         name = self._get_section_name(section_header)
         sectype = section_header['sh_type']
 
         if sectype == 'SHT_STRTAB':
-            return StringTableSection(section_header, name, self.stream)
+            return StringTableSection(section_header, name, self.stream, idx)
         elif sectype == 'SHT_NULL':
-            return NullSection(section_header, name, self.stream)
+            return NullSection(section_header, name, self.stream, idx)
         elif sectype in ('SHT_SYMTAB', 'SHT_DYNSYM', 'SHT_SUNW_LDYNSYM'):
             return self._make_symbol_table_section(section_header, name)
         elif sectype == 'SHT_SUNW_syminfo':
@@ -275,12 +275,13 @@ class ELFFile(object):
         elif sectype == 'SHT_GNU_versym':
             return self._make_gnu_versym_section(section_header, name)
         elif sectype in ('SHT_REL', 'SHT_RELA'):
-            return RelocationSection(
-                section_header, name, self.stream, self)
+            return RelocationSection(section_header, name, self.stream,
+                                     self, idx)
         elif sectype == 'SHT_DYNAMIC':
-            return DynamicSection(section_header, name, self.stream, self)
+            return DynamicSection(section_header, name, self.stream,
+                                  self, idx)
         else:
-            return Section(section_header, name, self.stream)
+            return Section(section_header, name, self.stream, idx)
 
     def _make_symbol_table_section(self, section_header, name):
         """ Create a SymbolTableSection

@@ -17,10 +17,14 @@ class Section(object):
          > sec = Section(...)
          > sec['sh_type']  # section type
     """
-    def __init__(self, header, name, stream):
+    def __init__(self, header, name, stream, idx=0):
         self.header = header
         self.name = name
         self.stream = stream
+        self.index = idx
+
+    def get_index(self):
+        return self.index
 
     def data(self):
         """ The section data from the file.
@@ -47,8 +51,8 @@ class Section(object):
 class NullSection(Section):
     """ ELF NULL section
     """
-    def __init__(self, header, name, stream):
-        super(NullSection, self).__init__(header, name, stream)
+    def __init__(self, header, name, stream, idx=0):
+        super(NullSection, self).__init__(header, name, stream, idx)
 
     def is_null(self):
         return True
@@ -57,8 +61,8 @@ class NullSection(Section):
 class StringTableSection(Section):
     """ ELF string table section.
     """
-    def __init__(self, header, name, stream):
-        super(StringTableSection, self).__init__(header, name, stream)
+    def __init__(self, header, name, stream, idx=0):
+        super(StringTableSection, self).__init__(header, name, stream, idx)
 
     def get_string(self, offset):
         """ Get the string stored at the given offset in this string table.
@@ -72,8 +76,8 @@ class SymbolTableSection(Section):
     """ ELF symbol table section. Has an associated StringTableSection that's
         passed in the constructor.
     """
-    def __init__(self, header, name, stream, elffile, stringtable):
-        super(SymbolTableSection, self).__init__(header, name, stream)
+    def __init__(self, header, name, stream, elffile, stringtable, idx=0):
+        super(SymbolTableSection, self).__init__(header, name, stream, idx)
         self.elffile = elffile
         self.elfstructs = self.elffile.structs
         self.stringtable = stringtable
