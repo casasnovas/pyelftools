@@ -103,7 +103,7 @@ class SymbolTableSection(Section):
             stream_pos=entry_offset)
         # Find the symbol name in the associated string table
         name = self.stringtable.get_string(entry['st_name'])
-        return Symbol(entry, name)
+        return Symbol(entry, name, n)
 
     def get_symbol_by_name(self, name):
         """ Get a symbol by its name. Return None if no symbol by the given
@@ -133,9 +133,10 @@ class Symbol(object):
         Similarly to Section objects, allows dictionary-like access to the
         symbol entry.
     """
-    def __init__(self, entry, name):
+    def __init__(self, entry, name, idx=-1):
         self.entry = entry
         self.name = name
+        self.index = idx
 
     def __getitem__(self, name):
         """ Implement dict-like access to entries
